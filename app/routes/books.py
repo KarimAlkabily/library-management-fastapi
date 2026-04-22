@@ -19,3 +19,10 @@ def get_book(book_id:int):
 def create_book(book:Book):
     books.append(book)
     return book
+
+@router.put("/books/{book_id}")
+def update_book(book_id:int,book:Book):
+     if book_id>=len(books):
+        raise HTTPException(status_code=404, detail="Book not found")
+        books[book_id]=book
+        return book
