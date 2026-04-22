@@ -1,35 +1,34 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException
 from app.schemas.book import Book
-from fastapi import  HTTPException
+from app.services import book_service
 
-router=APIRouter()
-books=[]
+router = APIRouter()
 
 @router.get("/books")
 def get_books():
-    return books
+    return book_service.get_all_books()
 
 @router.get("/books/{book_id}")
-def get_book(book_id:int):
-    if book_id>=len(books):
+def get_book(book_id: int):
+    book = book_service.get_book(book_id)
+    if not book:
         raise HTTPException(status_code=404, detail="Book not found")
-    return books[book_id]
-
-@router.post("/books")
-def create_book(book:Book):
-    books.append(book)
     return book
 
+@router.post("/books")
+def create_book(book: Book):
+    return book_service.create_book(book)
+
 @router.put("/books/{book_id}")
-def update_book(book_id:int,book:Book):
-     if book_id>=len(books):
+def update_book(book_id: int, book: Book):
+    updated = book_service.update_book(book_id, book)
+    if not updated:
         raise HTTPException(status_code=404, detail="Book not found")
-        books[book_id]=book
-        return book
+    return updated
 
 @router.delete("/books/{book_id}")
-def delete_book(book_id:int):
-    if book_id>=len(books):
+def delete_book(book_id: int):
+    deleted = book_service.delete_book(book_id)
+    if not deleted:
         raise HTTPException(status_code=404, detail="Book not found")
-    deleted_book = books.pop(book_id)
-    return {"message":"Book deleted","book":deleted_book}
+    return {"message": "deleted", "book": deleted}
