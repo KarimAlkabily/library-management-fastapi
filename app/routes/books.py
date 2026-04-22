@@ -26,3 +26,10 @@ def update_book(book_id:int,book:Book):
         raise HTTPException(status_code=404, detail="Book not found")
         books[book_id]=book
         return book
+
+@router.delete("/books/{book_id}")
+def delete_book(book_id:int):
+    if book_id>=len(books):
+        raise HTTPException(status_code=404, detail="Book not found")
+    deleted_book = books.pop(book_id)
+    return {"message":"Book deleted","book":deleted_book}
