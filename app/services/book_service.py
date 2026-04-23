@@ -1,24 +1,54 @@
-books = []
+from app.db import SessionLocal
+from app.models.book import Book
 
 def get_all_books():
+    db= SessionLocal()
+    books= db.query(Book).all()
+    db.close()
     return books
 
 def get_book(book_id):
-    if book_id >= len(books):
-        return None
-    return books[book_id]
-
-def create_book(book):
-    books.append(book)
+    db= SessionLocal()
+    book= db.query(Book).filter(Book.id == book_id).first()
+    db.close()
     return book
 
-def update_book(book_id, book):
-    if book_id >= len(books):
+def create_book(book_data):
+    db= SessionLocal()
+    book= Book(title=book_data.title, author= book_data.author)
+    db.add(book)
+    db.commit()
+    db.refresh(book)
+    db.close()
+    return book
+    
+
+def update_book(book_id, book_data):
+    db= SessionLocal()
+    book= db.query(Book).filter(Book.id==book_id).first()
+
+    if not book:
+        db.close()
         return None
-    books[book_id] = book
+    
+    book.title= book_data.title
+    book.author= book_data.author
+
+    db.commit()
+    db.refresh(book)
+    db.close()
     return book
 
 def delete_book(book_id):
-    if book_id >= len(books):
+    db= SessionLocal()
+
+    book= db.query(Book).filter(Book.id==book_id).first()
+
+    if not book:
+        db.close()
         return None
-    return books.pop(book_id)
+    
+    db.delete(book)
+    db.commit()
+    db.close()
+    return book
