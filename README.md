@@ -17,4 +17,7 @@
 3-book not borrowed
 4-make history to borrow_records
 
+###return
+*if record(user_id+book_id) is exist Delete it
+
 

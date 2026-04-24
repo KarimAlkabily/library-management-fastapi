@@ -47,6 +47,20 @@ def borrow_book(user_id:int,book_id:int):
 
     if result == "Book is aleardy borrowed":
         raise HTTPException(status_code=400, detail="Book already borrowed")
+    
+    if result == "limit_exceeded":
+        raise HTTPException(status_code=400, detail="Borrow limit exceeded")
 
     return {"message": "Book borrowed successfully"}
+
+
+@router.post("/borrow/return")
+def return_book(book_id:int,user_id:int):
+    result = book_service.return_book(book_id,user_id)
+
+    if result=="Record Not Found":
+        raise HTTPException(status_code=404,detail="Borrow record not found")
+
+    return {"message":"Book returnd successfully"}
+
     

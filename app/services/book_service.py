@@ -57,7 +57,7 @@ def delete_book(book_id):
 
 
 
-
+#..
 def borrow_book(user_id,book_id):
     db= SessionLocal()
 
@@ -72,24 +72,51 @@ def borrow_book(user_id,book_id):
     if not book:
         db.close()
         return "Book Not Found"
-    
-
 
     borrowed=db.query(BorrowRecord).filter(BorrowRecord.book_id==book_id).first()
-
     if borrowed:
         db.close()
         return "Book is aleardy borrowed"
     
 
+    user_books_count = db.query(BorrowRecord).filter(BorrowRecord.user_id == user_id).count()
+
+    if user_books_count >=3:
+        db.close()
+        return "limit_exceeded"
+
 
     borrow= BorrowRecord(user_id=user_id,book_id=book_id)
-
     db.add(borrow)
     db.commit()
     db.close()
 
     return "success"
+
+
+
+
+#..
+def return_book(user_id,book_id):
+    db=SessionLocal()
+
+    record=db.query(BorrowRecord).filter(
+        BorrowRecord.book_id==book_id,
+        BorrowRecord.user_id==user_id
+                                        )
+    
+    if not record:
+        db.close()
+        return "Record Not Found"
+    
+    db.delete(record)
+    db.commit()
+    db.close()
+
+    return "Success"
+
+
+
     
 
     
