@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from app.routes import books
-from app.models import book,user
+from app.models import book,user,borrow
 from app.db import engine,Base
 
 
