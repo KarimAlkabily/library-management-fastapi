@@ -5,3 +5,6 @@
 * POST   /books        → إضافة كتاب
 * PUT    /books/{id}   → تعديل
 * DELETE /books/{id}   → حذف
+
+#Relations
+![Database Diagram] (./Relations.svg)
