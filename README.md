@@ -9,3 +9,12 @@
 ## Relations
 
 ![Database Diagram](./Relations.png)
+
+
+###User->borrow->book
+1-book shoud be exist
+2-check user exist
+3-book not borrowed
+4-make history to borrow_records
+
+

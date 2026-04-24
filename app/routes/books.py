@@ -32,3 +32,21 @@ def delete_book(book_id: int):
     if not deleted:
         raise HTTPException(status_code=404, detail="Book not found")
     return {"message": "deleted", "book": deleted}
+
+
+@router.post("/borrow")
+def borrow_book(user_id:int,book_id:int):
+    result= book_service.borrow_book(user_id,book_id)
+
+
+    if result== "User Not Found":
+        raise HTTPException(status_code=404,detail="User not found")
+    
+    if result == "Book Not Found":
+        raise HTTPException(status_code=404, detail="Book not found")
+
+    if result == "Book is aleardy borrowed":
+        raise HTTPException(status_code=400, detail="Book already borrowed")
+
+    return {"message": "Book borrowed successfully"}
+    

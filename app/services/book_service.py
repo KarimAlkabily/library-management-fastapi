@@ -1,5 +1,7 @@
 from app.db import SessionLocal
 from app.models.book import Book
+from app.models.borrow import BorrowRecord
+from app.models.user import User
 
 def get_all_books():
     db= SessionLocal()
@@ -52,3 +54,43 @@ def delete_book(book_id):
     db.commit()
     db.close()
     return book
+
+
+
+
+def borrow_book(user_id,book_id):
+    db= SessionLocal()
+
+    user=db.query(User).filter(User.id==user_id).first()
+    if not user:
+        db.close()
+        return "User Not Found"
+    
+
+    
+    book=db.query(Book).filter(Book.id==book_id).first()
+    if not book:
+        db.close()
+        return "Book Not Found"
+    
+
+
+    borrowed=db.query(BorrowRecord).filter(BorrowRecord.book_id==book_id).first()
+
+    if borrowed:
+        db.close()
+        return "Book is aleardy borrowed"
+    
+
+
+    borrow= BorrowRecord(user_id=user_id,book_id=book_id)
+
+    db.add(borrow)
+    db.commit()
+    db.close()
+
+    return "success"
+    
+
+    
+
