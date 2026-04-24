@@ -141,6 +141,27 @@ def create_user(user_data: UserCreate):
     return user
 
 
+#..
+def login_user(user_data: UserLogin):
+    db = SessionLocal()
+
+    user = db.query(User).filter(User.email == user_data.email).first()
+
+    if not user:
+        db.close()
+        return "invalid_credentials"
+
+    # verify password
+    if not verify_password(user_data.password, user.password):
+        db.close()
+        return "invalid_credentials"
+
+    db.close()
+    return user
+
+
+
+
 
 
     
