@@ -2,8 +2,8 @@ from app.db import SessionLocal
 from app.models.book import Book
 from app.models.borrow import BorrowRecord
 from app.models.user import User
-from app.schemas.user import UserCreate
-from app.utils.security import hash_password
+from app.schemas.user import UserCreate,UserLogin
+from app.utils.security import hash_password,verify_password
 
 def get_all_books():
     db= SessionLocal()

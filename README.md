@@ -20,4 +20,7 @@
 ###return
 *if record(user_id+book_id) is exist Delete it
 
+###Flow login
+User → login → verify password → generate token → return token
+
 
