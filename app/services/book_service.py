@@ -2,6 +2,8 @@ from app.db import SessionLocal
 from app.models.book import Book
 from app.models.borrow import BorrowRecord
 from app.models.user import User
+from app.schemas.user import UserCreate
+from app.utils.security import hash_password
 
 def get_all_books():
     db= SessionLocal()
@@ -64,19 +66,19 @@ def borrow_book(user_id,book_id):
     user=db.query(User).filter(User.id==user_id).first()
     if not user:
         db.close()
-        return "User Not Found"
+        return "user_not_found"
     
 
     
     book=db.query(Book).filter(Book.id==book_id).first()
     if not book:
         db.close()
-        return "Book Not Found"
+        return "book_not_found"
 
     borrowed=db.query(BorrowRecord).filter(BorrowRecord.book_id==book_id).first()
     if borrowed:
         db.close()
-        return "Book is aleardy borrowed"
+        return "book_already_borrowed"
     
 
     user_books_count = db.query(BorrowRecord).filter(BorrowRecord.user_id == user_id).count()
@@ -103,7 +105,7 @@ def return_book(user_id,book_id):
     record=db.query(BorrowRecord).filter(
         BorrowRecord.book_id==book_id,
         BorrowRecord.user_id==user_id
-                                        )
+                                        ).first()
     
     if not record:
         db.close()
@@ -114,6 +116,30 @@ def return_book(user_id,book_id):
     db.close()
 
     return "Success"
+
+#..
+def create_user(user_data: UserCreate):
+    db = SessionLocal()
+
+    existing_user = db.query(User).filter(User.email == user_data.email).first()
+    if existing_user:
+        db.close()
+        return "email_exists"
+    
+    hashed_password = hash_password(user_data.password)
+
+    user= User(
+        username=user_data.username,
+        email=user_data.email,
+        password= hashed_password
+    )
+    db.add(user)
+    db.commit()
+    db.refresh(user)
+    db.close()
+
+    return user
+
 
 
 

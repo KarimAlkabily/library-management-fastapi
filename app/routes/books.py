@@ -1,6 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.book import Book
 from app.services import book_service
+from app.schemas.user import UserCreate
 
 router = APIRouter()
 
@@ -39,13 +40,13 @@ def borrow_book(user_id:int,book_id:int):
     result= book_service.borrow_book(user_id,book_id)
 
 
-    if result== "User Not Found":
-        raise HTTPException(status_code=404,detail="User not found")
+    if result== "user_not_found":
+        raise HTTPException(status_code=404,detail=f"User not found: {user_id}")
     
-    if result == "Book Not Found":
-        raise HTTPException(status_code=404, detail="Book not found")
+    if result == "book_not_found":
+        raise HTTPException(status_code=404, detail=f"Book not found: {book_id}")
 
-    if result == "Book is aleardy borrowed":
+    if result == "book_already_borrowed":
         raise HTTPException(status_code=400, detail="Book already borrowed")
     
     if result == "limit_exceeded":
@@ -56,11 +57,22 @@ def borrow_book(user_id:int,book_id:int):
 
 @router.post("/borrow/return")
 def return_book(book_id:int,user_id:int):
-    result = book_service.return_book(book_id,user_id)
+    result = book_service.return_book(user_id,book_id)
 
     if result=="Record Not Found":
         raise HTTPException(status_code=404,detail="Borrow record not found")
 
     return {"message":"Book returnd successfully"}
 
+
+
+#..
+@router.post("/register")
+def register(user:UserCreate):
+    result= book_service.create_user(user)
+
+    if result == "email_exists":
+        raise HTTPException(status_code=400, detail="Email already exists")
+
+    return result
     
