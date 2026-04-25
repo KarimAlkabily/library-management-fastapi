@@ -5,7 +5,6 @@ from app.schemas.user import UserCreate,UserLogin
 from fastapi import Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.utils.jwt import get_current_user
-
 security = HTTPBearer()
 router = APIRouter()
 
@@ -32,11 +31,22 @@ def update_book(book_id: int, book: Book):
     return updated
 
 @router.delete("/books/{book_id}")
-def delete_book(book_id: int):
+def delete_book(book_id: int,credentials: HTTPAuthorizationCredentials = Depends(security)):
+    token= credentials.credentials
+    user = get_current_user(token)
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+    
+    if user.role!="admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+
     deleted = book_service.delete_book(book_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Book not found")
     return {"message": "deleted", "book": deleted}
+
+
 
 
 @router.post("/borrow")
