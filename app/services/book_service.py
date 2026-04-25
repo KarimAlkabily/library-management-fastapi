@@ -4,6 +4,7 @@ from app.models.borrow import BorrowRecord
 from app.models.user import User
 from app.schemas.user import UserCreate,UserLogin
 from app.utils.security import hash_password,verify_password
+from app.utils.jwt import cerate_access_token 
 
 def get_all_books():
     db= SessionLocal()
@@ -155,9 +156,9 @@ def login_user(user_data: UserLogin):
     if not verify_password(user_data.password, user.password):
         db.close()
         return "invalid_credentials"
-
+    token=cerate_access_token({"user_id":user.id})
     db.close()
-    return user
+    return token
 
 
 

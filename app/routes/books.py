@@ -1,8 +1,12 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.book import Book
 from app.services import book_service
-from app.schemas.user import UserCreate
+from app.schemas.user import UserCreate,UserLogin
+from fastapi import Depends
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from app.utils.jwt import get_current_user
 
+security = HTTPBearer()
 router = APIRouter()
 
 @router.get("/books")
@@ -36,19 +40,29 @@ def delete_book(book_id: int):
 
 
 @router.post("/borrow")
-def borrow_book(user_id:int,book_id:int):
-    result= book_service.borrow_book(user_id,book_id)
+def borrow_book(
+    book_id: int,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    token = credentials.credentials
 
+    user = get_current_user(token)
 
-    if result== "user_not_found":
-        raise HTTPException(status_code=404,detail=f"User not found: {user_id}")
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
     
+    result = book_service.borrow_book(user.id, book_id)
+
+    # error handling
+    if result == "user_not_found":
+        raise HTTPException(status_code=404, detail="User not found")
+
     if result == "book_not_found":
-        raise HTTPException(status_code=404, detail=f"Book not found: {book_id}")
+        raise HTTPException(status_code=404, detail="Book not found")
 
     if result == "book_already_borrowed":
         raise HTTPException(status_code=400, detail="Book already borrowed")
-    
+
     if result == "limit_exceeded":
         raise HTTPException(status_code=400, detail="Borrow limit exceeded")
 
@@ -75,4 +89,14 @@ def register(user:UserCreate):
         raise HTTPException(status_code=400, detail="Email already exists")
 
     return result
-    
+
+
+#..
+@router.post("/login")
+def login(user:UserLogin):
+    result=book_service.login_user(user)
+
+    if result == "invalid_credentials":
+        raise HTTPException(status_code=400, detail="Invalid email or password")
+
+    return {"access_token": result}
