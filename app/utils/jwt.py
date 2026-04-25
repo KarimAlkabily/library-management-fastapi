@@ -2,7 +2,10 @@ from jose import jwt ,JWTError
 from datetime import datetime,timedelta
 from app.db import SessionLocal
 from app.models.user import User
-
+from fastapi import HTTPException
+from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
+from fastapi import Depends
+security = HTTPBearer()
 
 SECRET_KEY = "secret123"
 ALGORITHM = "HS256"
@@ -28,4 +31,22 @@ def get_current_user(token:str):
     db.close()
 
     return user
+
+
+
+
+#admin
+def get_current_admin(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
     
+    token = credentials.credentials
+    user = get_current_user(token)
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    if user.role != "admin":
+        raise HTTPException(status_code=403, detail="Not authorized")
+
+    return user

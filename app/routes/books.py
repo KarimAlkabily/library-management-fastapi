@@ -5,6 +5,7 @@ from app.schemas.user import UserCreate,UserLogin
 from fastapi import Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.utils.jwt import get_current_user
+from app.utils.jwt import get_current_admin
 security = HTTPBearer()
 router = APIRouter()
 
@@ -20,33 +21,23 @@ def get_book(book_id: int):
     return book
 
 @router.post("/books")
-def create_book(book: Book):
+def create_book(book: Book,user = Depends(get_current_admin)):
     return book_service.create_book(book)
 
 @router.put("/books/{book_id}")
-def update_book(book_id: int, book: Book):
+def update_book(book_id: int, book: Book,user = Depends(get_current_admin)):
     updated = book_service.update_book(book_id, book)
     if not updated:
         raise HTTPException(status_code=404, detail="Book not found")
     return updated
 
 @router.delete("/books/{book_id}")
-def delete_book(book_id: int,credentials: HTTPAuthorizationCredentials = Depends(security)):
-    token= credentials.credentials
-    user = get_current_user(token)
-
-    if not user:
-        raise HTTPException(status_code=401, detail="Invalid token")
-    
-    if user.role!="admin":
-        raise HTTPException(status_code=403, detail="Not authorized")
+def delete_book(book_id: int,user = Depends(get_current_admin)):
 
     deleted = book_service.delete_book(book_id)
     if not deleted:
         raise HTTPException(status_code=404, detail="Book not found")
     return {"message": "deleted", "book": deleted}
-
-
 
 
 @router.post("/borrow")
@@ -110,3 +101,19 @@ def login(user:UserLogin):
         raise HTTPException(status_code=400, detail="Invalid email or password")
 
     return {"access_token": result}
+
+
+#..history
+@router.get("/history")
+def get_history(
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    token = credentials.credentials
+    user = get_current_user(token)
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    history = book_service.get_user_history(user.id)
+
+    return history

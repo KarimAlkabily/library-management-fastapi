@@ -4,7 +4,8 @@ from app.models.borrow import BorrowRecord
 from app.models.user import User
 from app.schemas.user import UserCreate,UserLogin
 from app.utils.security import hash_password,verify_password
-from app.utils.jwt import cerate_access_token 
+from app.utils.jwt import cerate_access_token
+from datetime import datetime 
 
 def get_all_books():
     db= SessionLocal()
@@ -104,15 +105,17 @@ def return_book(user_id,book_id):
     db=SessionLocal()
 
     record=db.query(BorrowRecord).filter(
+        BorrowRecord.user_id==user_id,
         BorrowRecord.book_id==book_id,
-        BorrowRecord.user_id==user_id
+        BorrowRecord.returned == False
                                         ).first()
     
     if not record:
         db.close()
         return "Record Not Found"
     
-    db.delete(record)
+    record.returned = True
+    record.returned_at = datetime.utcnow()
     db.commit()
     db.close()
 
@@ -159,6 +162,18 @@ def login_user(user_data: UserLogin):
     token=cerate_access_token({"user_id":user.id})
     db.close()
     return token
+
+
+#..history
+def get_user_history(user_id):
+    db = SessionLocal()
+
+    records = db.query(BorrowRecord).filter(
+        BorrowRecord.user_id == user_id
+    ).all()
+
+    db.close()
+    return records
 
 
 
