@@ -6,24 +6,59 @@ from app.schemas.user import UserCreate,UserLogin
 from app.utils.security import hash_password,verify_password
 from app.utils.jwt import cerate_access_token
 from datetime import datetime 
+import json
+from app.db_conn.redis_db import redis_client
 
 def get_all_books():
+    cached_books = redis_client.get("books")
+
+    if cached_books:
+        return json.loads(cached_books)
+    
     db= SessionLocal()
-    books= db.query(Book).all()
+    books=db.query(Book).all() #redis[object->dict
+    
+    books_data = [{"id": book.id, "title": book.title, "author": book.author} for book in books]
+    
     db.close()
-    return books
+   
+    redis_client.set("books",json.dumps((books_data),ex=60))
+    return books_data
+
 
 def get_book(book_id):
+    cache_key =f"book:{book_id}"
+    cached_book =redis_client.get(cache_key)
+
+    if cached_book:
+        return json.loads(cached_book)
+    
     db= SessionLocal()
-    book= db.query(Book).filter(Book.id == book_id).first()
+    book =db.query(Book).filter(Book.id==book_id).first()
+
+    if not book:
+        db.close()
+        return None
+    
+    book_data = {
+        "id": book.id,
+        "title": book.title,
+        "author": book.author
+    }
+
     db.close()
-    return book
+
+    redis_client.set(cache_key,json.dumps(book_data),ex=60)
+
+    return book_data
+
 
 def create_book(book_data):
     db= SessionLocal()
     book= Book(title=book_data.title, author= book_data.author)
     db.add(book)
     db.commit()
+    redis_client.delete("books")
     db.refresh(book)
     db.close()
     return book
@@ -41,6 +76,8 @@ def update_book(book_id, book_data):
     book.author= book_data.author
 
     db.commit()
+    redis_client.delete("books")
+    redis_client.delete(f"book:{book_id}")
     db.refresh(book)
     db.close()
     return book
@@ -56,6 +93,8 @@ def delete_book(book_id):
     
     db.delete(book)
     db.commit()
+    redis_client.delete("books")
+    redis_client.delete(f"book:{book_id}")
     db.close()
     return book
 
