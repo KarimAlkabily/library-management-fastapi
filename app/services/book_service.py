@@ -22,7 +22,7 @@ def get_all_books():
     
     db.close()
    
-    redis_client.set("books",json.dumps((books_data),ex=60))
+    redis_client.set("books", json.dumps(books_data), ex=60)
     return books_data
 
 

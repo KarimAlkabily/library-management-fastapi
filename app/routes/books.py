@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException
 from app.schemas.book import Book
 from app.services import book_service
-from app.schemas.user import UserCreate,UserLogin
+from app.schemas.user import UserCreate,UserLogin,UserOut
 from fastapi import Depends
 from fastapi.security import HTTPBearer, HTTPAuthorizationCredentials
 from app.utils.jwt import get_current_user
@@ -71,8 +71,17 @@ def borrow_book(
 
 
 @router.post("/borrow/return")
-def return_book(book_id:int,user_id:int):
-    result = book_service.return_book(user_id,book_id)
+def return_book(
+    book_id: int,
+    credentials: HTTPAuthorizationCredentials = Depends(security)
+):
+    token = credentials.credentials
+    user = get_current_user(token)
+
+    if not user:
+        raise HTTPException(status_code=401, detail="Invalid token")
+
+    result = book_service.return_book(user.id, book_id)
 
     if result=="Record Not Found":
         raise HTTPException(status_code=404,detail="Borrow record not found")
@@ -82,14 +91,19 @@ def return_book(book_id:int,user_id:int):
 
 
 #..
-@router.post("/register")
+@router.post("/register", response_model=UserOut)
 def register(user:UserCreate):
     result= book_service.create_user(user)
 
     if result == "email_exists":
         raise HTTPException(status_code=400, detail="Email already exists")
 
-    return result
+    return {
+        "id": result.id,
+        "username": result.username,
+        "email": result.email,
+        "role": result.role,
+    }
 
 
 #..

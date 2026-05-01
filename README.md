@@ -34,9 +34,9 @@ docker compose up --build
 
 2) Open:
 
-- API: `http://127.0.0.1:8000`
-- Docs: `http://127.0.0.1:8000/docs`
-- Monitoring: `http://127.0.0.1:8000/monitoring`
+- API: `http://127.0.0.1:8001`
+- Docs: `http://127.0.0.1:8001/docs`
+- Monitoring: `http://127.0.0.1:8001/monitoring`
 
 3) Stop containers:
 
