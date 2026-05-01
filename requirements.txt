@@ -17,6 +17,7 @@ pyasn1==0.6.3
 pydantic==2.13.3
 pydantic_core==2.46.3
 python-jose==3.5.0
+redis==6.1.0
 rsa==4.9.1
 six==1.17.0
 SQLAlchemy==2.0.49
