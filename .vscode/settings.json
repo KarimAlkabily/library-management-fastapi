@@ -1,0 +1,7 @@
+{
+    "python.defaultInterpreterPath": "/home/akaza/Desktop/projects/library-project/backend/venv/bin/python",
+    "python.terminal.activateEnvironment": true,
+    "python.analysis.extraPaths": [
+        "/home/akaza/Desktop/projects/library-project/backend"
+    ]
+}
