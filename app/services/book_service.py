@@ -49,7 +49,6 @@ def get_book(book_id):
     db.close()
 
     redis_client.set(cache_key,json.dumps(book_data),ex=60)
-
     return book_data
 
 
