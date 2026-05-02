@@ -1,120 +1,78 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
 import './App.css'
+import { useEffect, useMemo, useState } from 'react'
+import { BooksList } from './components/BooksList.jsx'
+import { AuthPanel } from './components/AuthPanel.jsx'
+import { HistoryPanel } from './components/HistoryPanel.jsx'
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [token, setToken] = useState(() => localStorage.getItem('token') || '')
+  const [activeTab, setActiveTab] = useState('books')
+
+  useEffect(() => {
+    if (token) localStorage.setItem('token', token)
+    else localStorage.removeItem('token')
+  }, [token])
+
+  const authValue = useMemo(() => ({ token, setToken }), [token])
 
   return (
     <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          Count is {count}
-        </button>
-      </section>
+      <div className="appShell">
+        <header className="topbar">
+          <div className="brand">
+            <div className="brandMark" aria-hidden="true" />
+            <div className="brandText">
+              <div className="brandTitle">Library</div>
+              <div className="brandSub">Books • Borrow • History</div>
+            </div>
+          </div>
 
-      <div className="ticks"></div>
+          <nav className="tabs" aria-label="Primary">
+            <button
+              type="button"
+              className={activeTab === 'books' ? 'tab tabActive' : 'tab'}
+              onClick={() => setActiveTab('books')}
+            >
+              Books
+            </button>
+            <button
+              type="button"
+              className={activeTab === 'history' ? 'tab tabActive' : 'tab'}
+              onClick={() => setActiveTab('history')}
+            >
+              History
+            </button>
+            <button
+              type="button"
+              className={activeTab === 'auth' ? 'tab tabActive' : 'tab'}
+              onClick={() => setActiveTab('auth')}
+            >
+              Account
+            </button>
+          </nav>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+          <div className="session">
+            <span className={token ? 'pill pillOk' : 'pill'}>{token ? 'Signed in' : 'Guest'}</span>
+            {token ? (
+              <button type="button" className="btn btnGhost" onClick={() => setToken('')}>
+                Logout
+              </button>
+            ) : null}
+          </div>
+        </header>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
+        <main className="content">
+          {activeTab === 'books' ? <BooksList token={authValue.token} /> : null}
+          {activeTab === 'history' ? <HistoryPanel token={authValue.token} /> : null}
+          {activeTab === 'auth' ? <AuthPanel token={authValue.token} setToken={authValue.setToken} /> : null}
+        </main>
+
+        <footer className="footer">
+          <span className="muted">
+            API: <code>http://127.0.0.1:8001</code>
+          </span>
+        </footer>
+      </div>
     </>
   )
 }

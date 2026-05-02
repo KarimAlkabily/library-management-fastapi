@@ -1,0 +1,104 @@
+.booksPage {
+  width: 100%;
+  display: grid;
+  gap: 14px;
+}
+
+.pageHeader {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.pageTitle {
+  margin: 0;
+}
+
+.pageSub {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+}
+
+.searchBox {
+  flex: 1 1 280px;
+  max-width: 420px;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.92);
+  outline: none;
+}
+
+.searchInput:focus {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.18);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.empty {
+  border: 1px dashed var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 18px;
+  padding: 18px;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.alert {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-size: 13px;
+}
+
+.alertErr {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+  background: color-mix(in srgb, var(--danger) 14%, rgba(255, 255, 255, 0.03));
+}
+
+.toast {
+  border: 1px solid color-mix(in srgb, var(--ok) 45%, var(--border));
+  background: color-mix(in srgb, var(--ok) 12%, rgba(255, 255, 255, 0.03));
+  border-radius: 16px;
+  padding: 12px 14px;
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.skeleton {
+  height: 158px;
+  border-radius: 18px;
+  border: 1px solid var(--border);
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 0% 0%;
+  }
+  100% {
+    background-position: -200% 0%;
+  }
+}
+
+@media (max-width: 980px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+}
+

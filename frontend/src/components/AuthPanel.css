@@ -1,0 +1,140 @@
+.authPage {
+  width: 100%;
+  max-width: 720px;
+  display: grid;
+  gap: 14px;
+}
+
+.authHeader {
+  display: flex;
+  gap: 12px;
+  align-items: end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.authTitle {
+  margin: 0;
+}
+
+.authSub {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+}
+
+.authMode {
+  display: flex;
+  gap: 8px;
+}
+
+.modeBtn {
+  appearance: none;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.9);
+  border-radius: 999px;
+  padding: 8px 12px;
+  font-weight: 800;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.modeActive {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  background: color-mix(in srgb, var(--accent) 16%, rgba(255, 255, 255, 0.03));
+}
+
+.authCard {
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.03);
+  border-radius: 18px;
+  padding: 16px;
+  box-shadow: var(--shadow);
+}
+
+.form {
+  display: grid;
+  gap: 12px;
+}
+
+.field {
+  display: grid;
+  gap: 6px;
+}
+
+.label {
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+  font-weight: 700;
+}
+
+.input {
+  width: 100%;
+  padding: 11px 12px;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.04);
+  color: rgba(255, 255, 255, 0.92);
+  outline: none;
+}
+
+.input:focus {
+  border-color: color-mix(in srgb, var(--accent) 55%, var(--border));
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.18);
+}
+
+.notice {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 10px 12px;
+  font-size: 13px;
+}
+
+.noticeErr {
+  border-color: color-mix(in srgb, var(--danger) 45%, var(--border));
+  background: color-mix(in srgb, var(--danger) 12%, rgba(255, 255, 255, 0.03));
+}
+
+.noticeOk {
+  border-color: color-mix(in srgb, var(--ok) 45%, var(--border));
+  background: color-mix(in srgb, var(--ok) 12%, rgba(255, 255, 255, 0.03));
+}
+
+.submit {
+  appearance: none;
+  border: 1px solid color-mix(in srgb, var(--accent) 55%, var(--border));
+  background: color-mix(in srgb, var(--accent) 16%, rgba(255, 255, 255, 0.03));
+  color: rgba(255, 255, 255, 0.95);
+  border-radius: 14px;
+  padding: 11px 12px;
+  font-weight: 900;
+  font-size: 13px;
+  cursor: pointer;
+  transition: transform 0.05s ease, box-shadow 0.2s ease;
+}
+
+.submit:hover {
+  box-shadow: var(--shadow);
+}
+
+.submit:active {
+  transform: translateY(1px);
+}
+
+.submit:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.signedInTitle {
+  font-weight: 900;
+  color: rgba(255, 255, 255, 0.92);
+}
+
+.signedInSub {
+  margin-top: 6px;
+  color: rgba(255, 255, 255, 0.68);
+  font-size: 13px;
+}
+
