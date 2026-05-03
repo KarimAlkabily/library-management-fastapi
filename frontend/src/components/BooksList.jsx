@@ -4,6 +4,12 @@ import AddBook from "./AddBook";
 
 function BooksList() {
   const [books, setBooks] = useState([]);
+  const [search, setSearch] = useState("");
+  const [page, setPage] = useState(1);
+
+  const role = localStorage.getItem("role");
+
+  const booksPerPage = 3;
 
   const fetchBooks = () => {
     fetch("http://localhost:8001/books")
@@ -16,9 +22,19 @@ function BooksList() {
   }, []);
 
   const handleLogout = () => {
-    localStorage.removeItem("token");
+    localStorage.clear();
     window.location.href = "/";
   };
+
+  const filteredBooks = books.filter((b) =>
+    b.title.toLowerCase().includes(search.toLowerCase())
+  );
+
+  const start = (page - 1) * booksPerPage;
+  const paginatedBooks = filteredBooks.slice(
+    start,
+    start + booksPerPage
+  );
 
   return (
     <div>
@@ -26,11 +42,25 @@ function BooksList() {
 
       <button onClick={handleLogout}>Logout</button>
 
-      {/* 🔥 Add Book */}
-      <AddBook onBookAdded={fetchBooks} />
+      <input
+        placeholder="Search books..."
+        value={search}
+        onChange={(e) => {
+          setSearch(e.target.value);
+          setPage(1); // reset pagination
+        }}
+      />
 
-      {/* 📚 List */}
-      {books.map((book) => (
+      
+      <button onClick={() => (window.location.href = "/history")}>
+        My History
+      </button>
+
+      
+      {role === "admin" && <AddBook onBookAdded={fetchBooks} />}
+
+      
+      {paginatedBooks.map((book) => (
         <BookCard
           key={book.id}
           id={book.id}
@@ -39,6 +69,21 @@ function BooksList() {
           onRefresh={fetchBooks}
         />
       ))}
+
+      <div>
+        <button onClick={() => setPage(page - 1)} disabled={page === 1}>
+          Prev
+        </button>
+
+        <span> Page {page} </span>
+
+        <button
+          onClick={() => setPage(page + 1)}
+          disabled={start + booksPerPage >= filteredBooks.length}
+        >
+          Next
+        </button>
+      </div>
     </div>
   );
 }
