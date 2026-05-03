@@ -5,7 +5,7 @@ services:
     ports:
       - "8001:8000"
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@db:5432/library_db
+      DATABASE_URL: postgresql://postgres:1975@db:5432/library_db
       REDIS_HOST: redis
       REDIS_PORT: 6379
     depends_on:
@@ -18,7 +18,7 @@ services:
     environment:
       POSTGRES_DB: library_db
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+      POSTGRES_PASSWORD: 1975
     ports:
       - "5433:5432"
     volumes:
