@@ -2,12 +2,19 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 function Login() {
+  
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const navigate = useNavigate(); 
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
+
+  const navigate = useNavigate();
 
   const handleLogin = () => {
+    setLoading(true);
+    setError("");
+
     fetch("http://localhost:8001/login", {
       method: "POST",
       headers: {
@@ -18,26 +25,30 @@ function Login() {
         password: password,
       }),
     })
-      .then((res) => res.json())
-      .then((data) => {
-        console.log(data);
-
-        if (data.access_token) {
-          
-          localStorage.setItem("token", data.access_token);
-
-          
-          navigate("/books");
-        } else {
-          alert("Login failed");
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error("Invalid email or password");
         }
+        return res.json();
       })
-      .catch((err) => console.error(err));
+      .then((data) => {
+        localStorage.setItem("token", data.access_token);
+
+        navigate("/books");
+      })
+      .catch((err) => {
+        setError(err.message);
+      })
+      .finally(() => {
+        setLoading(false);
+      });
   };
 
   return (
     <div>
       <h2>Login</h2>
+
+      {error && <p style={{ color: "red" }}>{error}</p>}
 
       <input
         type="email"
@@ -53,7 +64,9 @@ function Login() {
         onChange={(e) => setPassword(e.target.value)}
       />
 
-      <button onClick={handleLogin}>Login</button>
+      <button onClick={handleLogin} disabled={loading}>
+        {loading ? "Logging in..." : "Login"}
+      </button>
     </div>
   );
 }
