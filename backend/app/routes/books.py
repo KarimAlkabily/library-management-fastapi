@@ -114,7 +114,10 @@ def login(user:UserLogin):
     if result == "invalid_credentials":
         raise HTTPException(status_code=400, detail="Invalid email or password")
 
-    return {"access_token": result}
+    return {
+    "access_token": result,
+    "role": user.role
+}
 
 
 #..history
