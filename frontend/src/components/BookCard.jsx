@@ -1,37 +1,54 @@
-function BookCard(props) {
-  const handleBorrow = () => {
-    const token = localStorage.getItem("token");
+import { useState } from "react";
 
-    fetch(`http://localhost:8001/borrow?book_id=${props.id}`, {
-      method: "POST",
+function BookCard(props) {
+  const [editing, setEditing] = useState(false);
+  const [title, setTitle] = useState(props.title);
+  const [author, setAuthor] = useState(props.author);
+
+  const token = localStorage.getItem("token");
+
+  // 🔥 DELETE
+  const handleDelete = () => {
+    fetch(`http://localhost:8001/books/${props.id}`, {
+      method: "DELETE",
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+    }).then(() => props.onRefresh());
   };
 
-  const handleReturn = () => {
-    const token = localStorage.getItem("token");
-
-    fetch(`http://localhost:8001/return?book_id=${props.id}`, {
-      method: "POST",
+  // 🔥 UPDATE
+  const handleUpdate = () => {
+    fetch(`http://localhost:8001/books/${props.id}`, {
+      method: "PUT",
       headers: {
+        "Content-Type": "application/json",
         Authorization: `Bearer ${token}`,
       },
-    })
-      .then((res) => res.json())
-      .then((data) => console.log(data));
+      body: JSON.stringify({ title, author }),
+    }).then(() => {
+      setEditing(false);
+      props.onRefresh();
+    });
   };
 
   return (
     <div>
-      <h3>{props.title}</h3>
-      <p>{props.author}</p>
+      {editing ? (
+        <>
+          <input value={title} onChange={(e) => setTitle(e.target.value)} />
+          <input value={author} onChange={(e) => setAuthor(e.target.value)} />
+          <button onClick={handleUpdate}>Save</button>
+        </>
+      ) : (
+        <>
+          <h3>{props.title}</h3>
+          <p>{props.author}</p>
+        </>
+      )}
 
-      <button onClick={handleBorrow}>Borrow</button>
-      <button onClick={handleReturn}>Return</button>
+      <button onClick={() => setEditing(!editing)}>Edit</button>
+      <button onClick={handleDelete}>Delete</button>
     </div>
   );
 }
