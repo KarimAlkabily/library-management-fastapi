@@ -1,16 +1,18 @@
 import { useState, useEffect } from "react";
 import BookCard from "./BookCard";
+import AddBook from "./AddBook";
 
 function BooksList() {
   const [books, setBooks] = useState([]);
 
-  useEffect(() => {
+  const fetchBooks = () => {
     fetch("http://localhost:8001/books")
       .then((res) => res.json())
-      .then((data) => {
-        setBooks(data);
-      })
-      .catch((err) => console.error(err));
+      .then((data) => setBooks(data));
+  };
+
+  useEffect(() => {
+    fetchBooks();
   }, []);
 
   const handleLogout = () => {
@@ -24,12 +26,17 @@ function BooksList() {
 
       <button onClick={handleLogout}>Logout</button>
 
+      {/* 🔥 Add Book */}
+      <AddBook onBookAdded={fetchBooks} />
+
+      {/* 📚 List */}
       {books.map((book) => (
         <BookCard
           key={book.id}
           id={book.id}
           title={book.title}
           author={book.author}
+          onRefresh={fetchBooks}
         />
       ))}
     </div>
