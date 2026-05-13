@@ -53,6 +53,16 @@ export default function BooksList() {
           <button className="btn-secondary btn-sm" onClick={() => navigate("/history")}>
             My History
           </button>
+
+          <button
+            className="btn-secondary btn-sm"
+            onClick={() => navigate("/monitoring")}
+                  >
+            Monitoring
+          </button>
+
+
+
           <button className="btn-danger btn-sm" onClick={handleLogout}>
             Logout
           </button>
