@@ -50,16 +50,20 @@ export default function BooksList() {
           </span>
         </div>
         <div style={styles.navRight}>
-          <button className="btn-secondary btn-sm" onClick={() => navigate("/history")}>
-            My History
-          </button>
+          {role === "member" && (
+            <button className="btn-secondary btn-sm" onClick={() => navigate("/history")}>
+              My History
+            </button>
+          )}
 
-          <button
-            className="btn-secondary btn-sm"
-            onClick={() => navigate("/monitoring")}
-                  >
-            Monitoring
-          </button>
+          {role === "admin" && (
+            <button
+              className="btn-secondary btn-sm"
+              onClick={() => navigate("/monitoring")}
+            >
+              Monitoring
+            </button>
+          )}
 
 
 
